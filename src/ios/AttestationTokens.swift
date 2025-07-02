@@ -3,12 +3,13 @@ import FirebaseCore
 import FirebaseAppCheck
 
 class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactory {
-  func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
-    return AppAttestProvider(app: app)
-  }
+    func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
+        return AppAttestProvider(app: app)
+    }
 }
 
-@objc(AttestationTokens) class AttestationTokens: CDVPlugin {
+@objc(AttestationTokens)
+class AttestationTokens: CDVPlugin {
     override func pluginInitialize() {
         super.pluginInitialize()
 
@@ -30,7 +31,7 @@ class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactor
         AppCheck.appCheck().token(forcingRefresh: false) { token, error in
             var pluginResult: CDVPluginResult
 
-            if let error {
+            if let error = error {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: error.localizedDescription
@@ -38,7 +39,7 @@ class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactor
                 self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                 return
             }
-            guard let token else {
+            guard let token = token else {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: "Couldn't get attestation token"
@@ -54,10 +55,10 @@ class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactor
 
     @objc(getLimitedUseToken:)
     func getLimitedUseToken(_ command: CDVInvokedUrlCommand) {
-        AppCheck.appCheck().limitedUseToken() { token, error in
+        AppCheck.appCheck().limitedUseToken { token, error in
             var pluginResult: CDVPluginResult
 
-            if let error {
+            if let error = error {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: error.localizedDescription
@@ -65,7 +66,7 @@ class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactor
                 self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                 return
             }
-            guard let token else {
+            guard let token = token else {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: "Couldn't get attestation token"
