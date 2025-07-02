@@ -3,20 +3,12 @@ import FirebaseCore
 import FirebaseAppCheck
 
 class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactory {
-    func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
-        // Use #available to check iOS version at runtime
-        if #available(iOS 14.0, *) {
-            return AppAttestProvider(app: app)
-        } else {
-            // Fallback to DeviceCheckProvider for iOS versions older than 14.0
-            // DeviceCheckProvider is available from iOS 11.0
-            return DeviceCheckProvider(app: app)
-        }
-    }
+  func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
+    return AppAttestProvider(app: app)
+  }
 }
 
-@objc(AttestationTokens)
-class AttestationTokens: CDVPlugin {
+@objc(AttestationTokens) class AttestationTokens: CDVPlugin {
     override func pluginInitialize() {
         super.pluginInitialize()
 
@@ -24,6 +16,9 @@ class AttestationTokens: CDVPlugin {
             fatalError("AttestationTokens plugin initialized with Firebase already configured. Move it earlier in the plugin list.")
         }
 
+        // An after_prepare hook script, debugSwitch.js, selects between
+        // AppCheckDebugProviderFactory and AttestationTokensAppCheckProviderFactory,
+        // by modifying the copy of this file created by Cordova in the platform dir
         let providerFactory = AttestationTokensAppCheckProviderFactory()
         AppCheck.setAppCheckProviderFactory(providerFactory)
 
@@ -35,7 +30,7 @@ class AttestationTokens: CDVPlugin {
         AppCheck.appCheck().token(forcingRefresh: false) { token, error in
             var pluginResult: CDVPluginResult
 
-            if let error = error {
+            if let error {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: error.localizedDescription
@@ -43,7 +38,7 @@ class AttestationTokens: CDVPlugin {
                 self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                 return
             }
-            guard let token = token else {
+            guard let token else {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: "Couldn't get attestation token"
@@ -59,10 +54,10 @@ class AttestationTokens: CDVPlugin {
 
     @objc(getLimitedUseToken:)
     func getLimitedUseToken(_ command: CDVInvokedUrlCommand) {
-        AppCheck.appCheck().limitedUseToken { token, error in
+        AppCheck.appCheck().limitedUseToken() { token, error in
             var pluginResult: CDVPluginResult
 
-            if let error = error {
+            if let error {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: error.localizedDescription
@@ -70,7 +65,7 @@ class AttestationTokens: CDVPlugin {
                 self.commandDelegate.send(pluginResult, callbackId: command.callbackId)
                 return
             }
-            guard let token = token else {
+            guard let token else {
                 pluginResult = CDVPluginResult(
                     status: CDVCommandStatus_ERROR,
                     messageAs: "Couldn't get attestation token"
