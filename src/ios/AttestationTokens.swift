@@ -4,7 +4,14 @@ import FirebaseAppCheck
 
 class AttestationTokensAppCheckProviderFactory: NSObject, AppCheckProviderFactory {
     func createProvider(with app: FirebaseApp) -> AppCheckProvider? {
-        return AppAttestProvider(app: app)
+        // Use #available to check iOS version at runtime
+        if #available(iOS 14.0, *) {
+            return AppAttestProvider(app: app)
+        } else {
+            // Fallback to DeviceCheckProvider for iOS versions older than 14.0
+            // DeviceCheckProvider is available from iOS 11.0
+            return DeviceCheckProvider(app: app)
+        }
     }
 }
 
@@ -17,9 +24,6 @@ class AttestationTokens: CDVPlugin {
             fatalError("AttestationTokens plugin initialized with Firebase already configured. Move it earlier in the plugin list.")
         }
 
-        // An after_prepare hook script, debugSwitch.js, selects between
-        // AppCheckDebugProviderFactory and AttestationTokensAppCheckProviderFactory,
-        // by modifying the copy of this file created by Cordova in the platform dir
         let providerFactory = AttestationTokensAppCheckProviderFactory()
         AppCheck.setAppCheckProviderFactory(providerFactory)
 
