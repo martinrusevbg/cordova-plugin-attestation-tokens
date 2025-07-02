@@ -20,10 +20,6 @@ class AttestationTokens: CDVPlugin {
     override func pluginInitialize() {
         super.pluginInitialize()
 
-        if FirebaseApp.app() != nil {
-            fatalError("AttestationTokens plugin initialized with Firebase already configured. Move it earlier in the plugin list.")
-        }
-
         let providerFactory = AttestationTokensAppCheckProviderFactory()
         AppCheck.setAppCheckProviderFactory(providerFactory)
 
