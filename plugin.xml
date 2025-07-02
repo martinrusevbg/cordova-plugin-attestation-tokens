@@ -13,7 +13,7 @@
 
   <!-- ios -->
   <platform name="ios">
-    <preference name="IOS_FIREBASE_POD_VERSION" default="11.3.0" />
+    <preference name="IOS_FIREBASE_POD_VERSION" default="10.11.0" />
 
     <header-file src="src/ios/Bridging-Header.h" type="BridgingHeader"/>
     <source-file src="src/ios/AttestationTokens.swift"/>
