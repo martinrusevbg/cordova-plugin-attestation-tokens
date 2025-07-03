@@ -20,10 +20,12 @@ class AttestationTokens: CDVPlugin {
     override func pluginInitialize() {
         super.pluginInitialize()
 
-        let providerFactory = AttestationTokensAppCheckProviderFactory()
-        AppCheck.setAppCheckProviderFactory(providerFactory)
-
-        FirebaseApp.configure()
+        if FirebaseApp.app() == nil {
+            let providerFactory = AttestationTokensAppCheckProviderFactory()
+            AppCheck.setAppCheckProviderFactory(providerFactory)
+    
+            FirebaseApp.configure()
+        }
     }
 
     @objc(getToken:)
